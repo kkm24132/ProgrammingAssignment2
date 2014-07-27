@@ -1,68 +1,60 @@
 ## R Programming - Program Assignment 2
-## Kamal Mishra
+## Author: Kamal Mishra
 ## A pair of functions that cache the inverse of a matrix
+## Creates a special matrix object that can cache its inverse
 
-## Function: makeCacheMatrix: Creates a special matrix object that can cache its inverse
+# makeCacheMatrix creates a list containing a function to
+# 1. set the value of the matrix
+# 2. get the value of the matrix
+# 3. set the value of inverse of the matrix
+# 4. get the value of inverse of the matrix
 makeCacheMatrix <- function(x = matrix()) {
-  
-  ## Initialize the inverse property
-  i <- NULL
-  
-  ## Method to set the matrix
-  set <- function( matrix ) {
-    m <<- matrix
-    i <<- NULL
+  inv <- NULL
+  set <- function(y) {
+    x <<- y
+    inv <<- NULL
   }
-  
-  ## Method to get the matrix
-  get <- function() {
-    ## Return the matrix
-    m
-  }
-  
-  ## Method to set the inverse of the matrix
-  setInverse <- function(inverse) {
-    i <<- inverse
-  }
-  
-  ## Method to get the inverse of the matrix
-  getInverse <- function() {
-    ## Return the inverse property
-    i
-  }
-  
-  ## Return a list of the methods
-  list(set = set, get = get,
-       setInverse = setInverse,
-       getInverse = getInverse)
-    
+  get <- function() x
+  setinverse <- function(inverse) inv <<- inverse
+  getinverse <- function() inv
+  list(set=set, get=get, setinverse=setinverse, getinverse=getinverse)
 }
 
-
-## Function: cacheSolve: Compute the inverse of the special matrix returned by "makeCacheMatrix" above.
+## Compute the inverse of the special matrix returned by "makeCacheMatrix" above.
 ## If the inverse has already been calculated (and the matrix has not
 ## changed), then the "cacheSolve" should retrieve the inverse from the cache.
+
 cacheSolve <- function(x, ...) {
-  
-  ## Return a matrix that is the inverse of 'x'
-  m <- x$getInverse()
-  
-  ## Just return the inverse if its already set
-  if( !is.null(m) ) {
-    message("Message: getting cached data")
-    return(m)
+  inv <- x$getinverse()
+  if(!is.null(inv)) {
+    message("Message: getting cached data.")
+    return(inv)
   }
-  
-  ## Get the matrix from our object
   data <- x$get()
-  
-  ## Calculate the inverse using matrix multiplication
-  m <- solve(data) %*% data
-  
-  ## Set the inverse to the object
-  x$setInverse(m)
-  
-  ## Return the matrix
-  m
-  
+  inv <- solve(data)
+  x$setinverse(inv)
+  inv
 }
+
+
+## Test Result - Sample Run:
+## > x=rbind(c(1,-0.25),c(-0.25,1))
+## > m=makeCacheMatrix(x)
+## > m$get()
+##       [,1]  [,2]
+## [1,]  1.00 -0.25
+## [2,] -0.25  1.00
+
+## Test Result - No cache in the First Run:
+## > cacheSolve(m)
+##           [,1]      [,2]
+## [1,] 1.0666667 0.2666667
+## [2,] 0.2666667 1.0666667
+
+## Test Result -  Retrieving from cache from Second run:
+## > cacheSolve(m)
+## Message: getting cached data.
+##           [,1]      [,2]
+## [1,] 1.0666667 0.2666667
+## [2,] 0.2666667 1.0666667
+
